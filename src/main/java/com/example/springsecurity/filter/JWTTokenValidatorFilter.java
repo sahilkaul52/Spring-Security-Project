@@ -25,11 +25,11 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String jwt = request.getHeader(SecurityConstants.JWT_HEADER);
+        String jwt = request.getHeader(SecurityConstants.JWT_HEADER); //name of response header via which we had initially sent the token
 
         if (null != jwt) {
             try {
-                //generating secret key, use same secret key used during creating the token
+                //generating secret key, use same secret key used during creation the token
                 SecretKey key = Keys.hmacShaKeyFor(
                         SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
 

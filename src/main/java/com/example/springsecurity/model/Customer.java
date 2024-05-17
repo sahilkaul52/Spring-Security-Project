@@ -12,7 +12,7 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
-    @GenericGenerator(name = "native",strategy = "native")
+    @GenericGenerator(name = "native",strategy = "native") //native matlab the database will generate the next sequence, we need not worry about it
     @Column(name = "customer_id")
     private int id;
 

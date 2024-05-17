@@ -27,20 +27,22 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         //jwt generation occurs after authentication is successful
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null != authentication) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); // this will return the currently AUTHENTICATED user information
+
+        if (null != authentication)
+        {
             //generating secret key
-            SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
+            SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8)); //Yeh JWT key will only be in possesion of backend
 
             //creating jwt token
             String jwt = Jwts.builder().issuer("Sahil Kaul").subject("JWT Token")
                     .claim("username", authentication.getName())
-                    .claim("authorities", populateAuthorities(authentication.getAuthorities()))
+                    .claim("authorities", populateAuthorities(authentication.getAuthorities())) // dont set password info in payload of jwt token
                     .issuedAt(new Date())
-                    .expiration(new Date((new Date()).getTime() + 30000)) //30 seconds
+                    .expiration(new Date((new Date()).getTime() + 30000000))
                     .signWith(key).compact();  //signature
 
-            response.setHeader(SecurityConstants.JWT_HEADER, jwt);  //sending back jwt token as header
+            response.setHeader(SecurityConstants.JWT_HEADER, jwt);  //sending jwt token as response header
         }
 
         filterChain.doFilter(request, response);
@@ -48,7 +50,7 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !request.getServletPath().equals("/user"); // this filter will not be executed for these paths. It will only be executed for /user i.e login
+        return !request.getServletPath().equals("/user"); // this filter will not be executed for other paths. It will only be executed for /user i.e login
     }
 
     private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
